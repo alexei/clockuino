@@ -5,9 +5,13 @@ Ceas RTC simplu construit cu Arduino Uno, un modul RTC DS3231M și un modul LCD 
 ## Conectare
 
 Conectarea firelor este destul de simplă:
+
 VCC -> 5V
+
 GND -> GND
+
 SCL -> A5
+
 SDA -> A4
 
 ## Biblioteci necesare:
