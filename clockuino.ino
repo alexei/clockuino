@@ -1,7 +1,11 @@
 #include <DS3231M.h>
 #include <LiquidCrystal_I2C.h>
 
+// [EN] Create an instance of the DS3231M class
+// [RO] Crează o instanță a clasei DS3231M
 DS3231M_Class DS3231M;
+// [EN] Create an instance of the LiquidCrystal_I2C class
+// [RO] Crează o instanță a clasei LiquidCrystal_I2C
 LiquidCrystal_I2C lcd(0x25, 20, 4);
 
 char output_buffer[32];
@@ -10,6 +14,9 @@ const uint8_t INPUT_BUFFER_SIZE = 32;
 const char RESET_COMMAND[] = "RESET";
 const char SET_COMMAND[] = "SET";
 
+// [EN] These are needed in order to extract the month from the compile date
+// [RO] Necesare pentru a putea extrage luna din data când a fost compilat
+// programul
 const char JAN_CODE[] = "Jan";
 const char FEB_CODE[] = "Feb";
 const char MAR_CODE[] = "Mar";
@@ -29,12 +36,14 @@ void setup() {
   Serial.println("Init setup");
   Serial.flush();
 
+  // [EN] Try multiple time to connect to the DS3231M module
+  // [RO] Încearcă de mai multe ori să se conecteze la modulul DS3231M
   uint8_t retries = 0;
   bool found = false;
   while (retries < 3 && !found) {
     Serial.println("Trying to find DS3231M...");
     Serial.flush();
-   
+
     if (DS3231M.begin()) {
       Serial.println("Found DS3231M");
       Serial.flush();
@@ -51,6 +60,8 @@ void setup() {
     exit(0);
   }
 
+  // [EN] Initialise the modules
+  // [RO] Inițializează modulele
   DS3231M.pinSquareWave();
 
   lcd.init();
@@ -91,7 +102,7 @@ void loop() {
     );
     lcd.setCursor(0, 1);
     lcd.print(output_buffer);
-    
+
     secs = now.second();
   }
 
@@ -99,6 +110,8 @@ void loop() {
 }
 
 void handle_input() {
+  // [EN] Handles commands
+  // [RO] Procesează comenzile
   static uint8_t i = 0;
   char input_char;
   static char input_buffer[INPUT_BUFFER_SIZE];
@@ -107,10 +120,12 @@ void handle_input() {
     if (input_char == '\n' || i == INPUT_BUFFER_SIZE) {
       input_buffer[i] = 0;
 
+      // RESET
       if (strcmp(input_buffer, RESET_COMMAND) == 0) {
         handle_reset_command();
       }
       else {
+        // SET YYYY-MM-DD HH:MM:SS
         bool got_set_command = true;
         for (uint8_t i = 0; i < strlen(SET_COMMAND); i++) {
           if (input_buffer[i] != SET_COMMAND[i]) {
@@ -122,7 +137,7 @@ void handle_input() {
           handle_set_command(input_buffer);
         }
       }
-     
+
       memset(input_buffer, 0, sizeof(input_buffer));
       i = 0;
     }
@@ -134,6 +149,8 @@ void handle_input() {
 }
 
 void handle_reset_command() {
+  // [EN] Parse and set date/time from the compile date/time
+  // [RO] Extrage și setează data/ora la data/ora când a fost compilat programul
   Serial.println("Resetting time...");
 
   unsigned int tokens, year, month, day, hour, minute, second;
@@ -145,7 +162,7 @@ void handle_reset_command() {
     Serial.flush();
     return;
   }
- 
+
   if (strcmp(month_code, JAN_CODE) == 0) {
     month = 1;
   }
@@ -182,7 +199,7 @@ void handle_reset_command() {
   else if (strcmp(month_code, DEC_CODE) == 0) {
     month = 12;
   }
- 
+
   if (!month) {
     Serial.println("Unable to parse month");
     Serial.flush();
@@ -195,7 +212,7 @@ void handle_reset_command() {
     Serial.flush();
     return;
   }
- 
+
   DS3231M.adjust(DateTime(year, month, day, hour, minute, second));
   DateTime now = DS3231M.now();
 
@@ -214,6 +231,8 @@ void handle_reset_command() {
 }
 
 void handle_set_command(char input_buffer[INPUT_BUFFER_SIZE]) {
+  // [EN] Parse and set date/time to specified values
+  // [RO] Extrage și setează data/ora la data/ora indicate
   Serial.println("Setting time...");
   unsigned int tokens, year, month, day, hour, minute, second;
   tokens = sscanf(
