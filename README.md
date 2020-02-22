@@ -7,8 +7,11 @@ Simple RTC clock built using Arduino Uno, a DS3231M RTC module and a PCF8574T LC
 Wiring is pretty straightforward:
 
 VCC -> 5V
+
 GND -> GND
+
 SCL -> A5
+
 SDA -> A4
 
 ## Requirements
