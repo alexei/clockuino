@@ -1,6 +1,9 @@
 #include <DS3231M.h>
+#include <LiquidCrystal_I2C.h>
+#include <Wire.h> 
 
 DS3231M_Class DS3231M;
+LiquidCrystal_I2C lcd(0x25, 20, 4);
 
 char output_buffer[32];
 
@@ -32,7 +35,7 @@ void setup() {
   while (retries < 3 && !found) {
     Serial.println("Trying to find DS3231M...");
     Serial.flush();
-    
+   
     if (DS3231M.begin()) {
       Serial.println("Found DS3231M");
       Serial.flush();
@@ -50,6 +53,9 @@ void setup() {
   }
 
   DS3231M.pinSquareWave();
+
+  lcd.init();
+  lcd.backlight();
 }
 
 void loop() {
@@ -67,6 +73,26 @@ void loop() {
       now.second()
     );
     Serial.println(output_buffer);
+
+    sprintf(
+      output_buffer,
+      "%02d/%02d/%04d",
+      now.day(),
+      now.month(),
+      now.year()
+    );
+    lcd.setCursor(0, 0);
+    lcd.print(output_buffer);
+    sprintf(
+      output_buffer,
+      "%02d:%02d:%02d",
+      now.hour(),
+      now.minute(),
+      now.second()
+    );
+    lcd.setCursor(0, 1);
+    lcd.print(output_buffer);
+    
     secs = now.second();
   }
 
@@ -97,7 +123,7 @@ void handle_input() {
           handle_set_command(input_buffer);
         }
       }
-      
+     
       memset(input_buffer, 0, sizeof(input_buffer));
       i = 0;
     }
@@ -120,7 +146,7 @@ void handle_reset_command() {
     Serial.flush();
     return;
   }
-  
+ 
   if (strcmp(month_code, JAN_CODE) == 0) {
     month = 1;
   }
@@ -157,7 +183,7 @@ void handle_reset_command() {
   else if (strcmp(month_code, DEC_CODE) == 0) {
     month = 12;
   }
-  
+ 
   if (!month) {
     Serial.println("Unable to parse month");
     Serial.flush();
@@ -170,7 +196,7 @@ void handle_reset_command() {
     Serial.flush();
     return;
   }
-  
+ 
   DS3231M.adjust(DateTime(year, month, day, hour, minute, second));
   DateTime now = DS3231M.now();
 
