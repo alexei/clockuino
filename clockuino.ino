@@ -1,6 +1,5 @@
 #include <DS3231M.h>
 #include <LiquidCrystal_I2C.h>
-#include <Wire.h> 
 
 DS3231M_Class DS3231M;
 LiquidCrystal_I2C lcd(0x25, 20, 4);
