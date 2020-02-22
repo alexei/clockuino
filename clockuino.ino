@@ -4,8 +4,10 @@
 // [EN] Create an instance of the DS3231M class
 // [RO] Crează o instanță a clasei DS3231M
 DS3231M_Class DS3231M;
-// [EN] Create an instance of the LiquidCrystal_I2C class
-// [RO] Crează o instanță a clasei LiquidCrystal_I2C
+// [EN] Create an instance of the LiquidCrystal_I2C class; note 0x25 here is
+// the address of this module.
+// [RO] Crează o instanță a clasei LiquidCrystal_I2C; 0x25 aici e adresa
+// modulului.
 LiquidCrystal_I2C lcd(0x25, 20, 4);
 
 char output_buffer[32];
